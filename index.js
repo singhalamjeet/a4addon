@@ -34,6 +34,14 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
+// Public config endpoint to provide Supabase credentials to client
+app.get('/api/config', (req, res) => {
+    res.json({
+        supabaseUrl: process.env.SUPABASE_URL || '',
+        supabaseAnonKey: process.env.SUPABASE_ANON_KEY || ''
+    });
+});
+
 // Supabase status endpoint
 app.get('/api/supabase-status', (req, res) => {
     if (supabase) {

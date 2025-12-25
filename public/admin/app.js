@@ -1,48 +1,35 @@
 // Initialize Supabase client
-const SUPABASE_URL = window.location.hostname === 'localhost'
-    ? 'YOUR_SUPABASE_URL'
-    : 'YOUR_SUPABASE_URL'; // Will be set via environment
-
-const SUPABASE_ANON_KEY = window.location.hostname === 'localhost'
-    ? 'YOUR_SUPABASE_KEY'
-    : 'YOUR_SUPABASE_KEY'; // Will be set via environment
-
-// Note: For production, these should be embedded during build or fetched from config endpoint
-// For now, we'll detect them from the meta tags or use a config endpoint
 let supabaseClient = null;
+let supabaseConfig = null;
 
-// Initialize Supabase
+// Fetch Supabase config from server
 async function initSupabase() {
     try {
-        // Try to get config from a meta endpoint
-        const response = await fetch('/api/supabase-status');
-        const data = await response.json();
+        const response = await fetch('/api/config');
+        supabaseConfig = await response.json();
 
-        // For client-side, we need the public URL and anon key
-        // These should be safe to expose as they're public credentials
-        // In production, you might want to add these as meta tags in your HTML
-
-        // For now, we'll initialize with placeholder
-        // The actual initialization should use your Supabase project credentials
-        const url = document.querySelector('meta[name="supabase-url"]')?.content;
-        const key = document.querySelector('meta[name="supabase-key"]')?.content;
-
-        if (url && key) {
-            supabaseClient = supabase.createClient(url, key);
+        if (supabaseConfig.supabaseUrl && supabaseConfig.supabaseAnonKey) {
+            const { createClient } = supabase;
+            supabaseClient = createClient(supabaseConfig.supabaseUrl, supabaseConfig.supabaseAnonKey);
+            return true;
         } else {
-            console.warn('Supabase credentials not found in meta tags');
+            console.error('Supabase credentials not configured');
+            return false;
         }
     } catch (error) {
         console.error('Failed to initialize Supabase:', error);
+        return false;
     }
 }
 
 // Get current session
 async function getSession() {
     if (!supabaseClient) {
-        // Try to get from localStorage (set during login)
-        const session = localStorage.getItem('supabase_session');
-        return session ? JSON.parse(session) : null;
+        await initSupabase();
+    }
+
+    if (!supabaseClient) {
+        return null;
     }
 
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -52,26 +39,30 @@ async function getSession() {
 // Login function
 async function login(email, password) {
     try {
-        // Use fetch to call Supabase auth directly
-        const response = await fetch(`https://${window.SUPABASE_PROJECT_REF}.supabase.co/auth/v1/token?grant_type=password`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': window.SUPABASE_ANON_KEY
-            },
-            body: JSON.stringify({ email, password })
+        if (!supabaseClient) {
+            await initSupabase();
+        }
+
+        if (!supabaseClient) {
+            return { success: false, error: 'Supabase not configured' };
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
         });
 
-        const data = await response.json();
-
-        if (data.access_token) {
-            // Store session
-            localStorage.setItem('supabase_session', JSON.stringify(data));
-            localStorage.setItem('supabase_token', data.access_token);
-            return { success: true };
-        } else {
-            return { success: false, error: data.error_description || 'Login failed' };
+        if (error) {
+            return { success: false, error: error.message };
         }
+
+        if (data.session) {
+            // Store session for API calls
+            localStorage.setItem('supabase_token', data.session.access_token);
+            return { success: true };
+        }
+
+        return { success: false, error: 'Login failed' };
     } catch (error) {
         console.error('Login error:', error);
         return { success: false, error: error.message };
@@ -81,11 +72,15 @@ async function login(email, password) {
 // Logout function
 async function logout() {
     try {
-        localStorage.removeItem('supabase_session');
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
         localStorage.removeItem('supabase_token');
         window.location.href = '/admin';
     } catch (error) {
         console.error('Logout error:', error);
+        localStorage.removeItem('supabase_token');
+        window.location.href = '/admin';
     }
 }
 
@@ -111,7 +106,7 @@ async function apiCall(endpoint, options = {}) {
         }
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
         // Token expired or invalid
         logout();
         throw new Error('Session expired. Please login again.');
@@ -172,16 +167,9 @@ function showToast(message, type = 'success') {
     }
 }
 
-// Initialize on load
+// Auto-initialize on load
 if (typeof window !== 'undefined') {
-    // Set Supabase config from meta tags if available
     window.addEventListener('DOMContentLoaded', () => {
-        const urlMeta = document.querySelector('meta[name="supabase-url"]');
-        const keyMeta = document.querySelector('meta[name="supabase-key"]');
-
-        if (urlMeta && keyMeta) {
-            window.SUPABASE_PROJECT_REF = new URL(urlMeta.content).hostname.split('.')[0];
-            window.SUPABASE_ANON_KEY = keyMeta.content;
-        }
+        initSupabase();
     });
 }
