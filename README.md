@@ -6,6 +6,7 @@ A minimal Node.js Express application that displays "Hello World" on the homepag
 
 - Simple Express.js server
 - Static HTML page with modern design
+- Supabase integration with environment-based configuration
 - Health check endpoint for deployment platforms
 - Docker support for easy deployment
 - Ready for Coolify deployment
@@ -25,12 +26,17 @@ A minimal Node.js Express application that displays "Hello World" on the homepag
    npm install
    ```
 
-3. Start the development server:
+3. Configure Supabase (optional):
+   - Copy `.env.example` to `.env`
+   - Get your Supabase credentials from [https://app.supabase.com/project/_/settings/api](https://app.supabase.com)
+   - Update the `.env` file with your `SUPABASE_URL` and `SUPABASE_ANON_KEY`
+
+4. Start the development server:
    ```bash
    npm start
    ```
 
-4. Open your browser and visit `http://localhost:3000`
+5. Open your browser and visit `http://localhost:3000`
 
 ## Deployment on Coolify
 
@@ -41,7 +47,10 @@ A minimal Node.js Express application that displays "Hello World" on the homepag
 3. Connect your Git repository
 4. Coolify will automatically detect the Dockerfile and build your app
 5. Set the port to `3000` if not auto-detected
-6. Deploy!
+6. **Configure environment variables** in Coolify:
+   - `SUPABASE_URL`: Your Supabase project URL
+   - `SUPABASE_ANON_KEY`: Your Supabase anonymous key
+7. Deploy!
 
 ### Option 2: Docker Deployment
 
@@ -58,11 +67,14 @@ A minimal Node.js Express application that displays "Hello World" on the homepag
 ## Environment Variables
 
 - `PORT` - The port the server will listen on (default: 3000)
+- `SUPABASE_URL` - Your Supabase project URL (optional)
+- `SUPABASE_ANON_KEY` - Your Supabase anonymous/public key (optional)
 
 ## Endpoints
 
 - `/` - Main homepage displaying "Hello World"
 - `/health` - Health check endpoint (returns JSON status)
+- `/api/supabase-status` - Supabase connection status
 
 ## License
 
