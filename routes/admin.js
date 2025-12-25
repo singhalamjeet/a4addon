@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 const { authenticateUser, requireAdmin } = require('../middleware/auth');
 
 // Apply authentication and admin check to all routes
