@@ -11,12 +11,14 @@ router.use(requireAdmin);
 // Get all users
 router.get('/users', async (req, res) => {
     try {
-        if (!supabase) {
-            return res.status(503).json({ error: 'Supabase not configured' });
+        if (!supabaseAdmin) {
+            return res.status(503).json({
+                error: 'Supabase admin not configured. Please set SUPABASE_SERVICE_ROLE_KEY environment variable.'
+            });
         }
 
-        // Get list of all authenticated users
-        const { data: { users }, error } = await supabase.auth.admin.listUsers();
+        // Get list of all authenticated users using admin client
+        const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
 
         if (error) {
             console.error('Error fetching users:', error);
