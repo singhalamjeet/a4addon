@@ -9,6 +9,21 @@ const PORT = process.env.PORT || 3000;
 // Parse JSON request bodies
 app.use(express.json());
 
+// Serve static files from public directory
+app.use(express.static('public'));
+
+// Mount admin API routes
+app.use('/api/admin', adminRoutes);
+
+// Admin routes
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'login.html'));
+});
+
+app.get('/admin/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'dashboard.html'));
+});
+
 // Root route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
