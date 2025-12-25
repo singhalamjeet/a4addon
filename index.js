@@ -1,12 +1,13 @@
 const express = require('express');
 const path = require('path');
 const supabase = require('./config/supabase');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from public directory
-app.use(express.static('public'));
+// Parse JSON request bodies
+app.use(express.json());
 
 // Root route
 app.get('/', (req, res) => {
