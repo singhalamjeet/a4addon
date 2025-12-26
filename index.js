@@ -51,6 +51,15 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard', 'index.html'));
 });
 
+// Customer authentication
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth', 'signup.html'));
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth', 'login.html'));
+});
+
 // Root route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
