@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const supabase = require('./config/supabase');
 const adminRoutes = require('./routes/admin');
+const paymentSettingsRoutes = require('./routes/payment-settings');
+const checkoutRoutes = require('./routes/checkout');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +16,10 @@ app.use(express.static('public'));
 
 // Mount admin API routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/payment-settings', paymentSettingsRoutes);
+
+// Mount checkout routes
+app.use('/api/checkout', checkoutRoutes);
 
 // Admin routes
 app.get('/admin', (req, res) => {
@@ -22,6 +28,10 @@ app.get('/admin', (req, res) => {
 
 app.get('/admin/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin', 'dashboard.html'));
+});
+
+app.get('/admin/payment-settings', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'payment-settings.html'));
 });
 
 // Root route

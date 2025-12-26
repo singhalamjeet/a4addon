@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateways - Admin Panel</title>
+    <link rel="stylesheet" href="/admin/style.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎯 Admin Panel</h2>
+                <p id="adminEmail" class="admin-email"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-item">
+                    <span class="icon">👥</span>
+                    <span>Users</span>
+                </a>
+                <a href="/admin/dashboard" class="nav-item">
+                    <span class="icon">💳</span>
+                    <span>Subscription Plans</span>
+                </a>
+                <a href="/admin/payment-settings" class="nav-item active">
+                    <span class="icon">💰</span>
+                    <span>Payment Gateways</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-secondary">
+                    <span>🚪 Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="content-section active">
+                <div class="section-header">
+                    <h1>Payment Gateway Settings</h1>
+                    <p>Configure Stripe and PayPal for processing payments</p>
+                </div>
+
+                <div class="payment-gateways">
+                    <!-- Stripe Card -->
+                    <div class="gateway-card" data-gateway="stripe">
+                        <div class="gateway-header">
+                            <div>
+                                <h2>💳 Stripe</h2>
+                                <p>Credit card payments</p>
+                            </div>
+                            <div class="gateway-status">
+                                <span class="status-badge" id="stripeStatus">Not Configured</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="stripeEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <form id="stripeForm" class="gateway-form">
+                            <div class="form-group">
+                                <label for="stripePublicKey">Publishable Key</label>
+                                <input type="text" id="stripePublicKey" placeholder="pk_test_..." autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stripeSecretKey">Secret Key</label>
+                                <input type="password" id="stripeSecretKey" placeholder="sk_test_..."
+                                    autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stripeWebhookSecret">Webhook Secret (Optional)</label>
+                                <input type="password" id="stripeWebhookSecret" placeholder="whsec_..."
+                                    autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="stripeTestMode" checked>
+                                    <span>Test Mode (Use test API keys)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" id="testStripeBtn">Test
+                                    Connection</button>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- PayPal Card -->
+                    <div class="gateway-card" data-gateway="paypal">
+                        <div class="gateway-header">
+                            <div>
+                                <h2>🅿️ PayPal</h2>
+                                <p>PayPal payments</p>
+                            </div>
+                            <div class="gateway-status">
+                                <span class="status-badge" id="paypalStatus">Not Configured</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="paypalEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <form id="paypalForm" class="gateway-form">
+                            <div class="form-group">
+                                <label for="paypalClientId">Client ID</label>
+                                <input type="text" id="paypalClientId" placeholder="Client ID" autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="paypalSecret">Secret</label>
+                                <input type="password" id="paypalSecret" placeholder="Secret" autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="paypalTestMode" checked>
+                                    <span>Test Mode (Use sandbox credentials)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" id="testPayPalBtn">Test
+                                    Connection</button>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/admin/app.js"></script>
+    <script src="/admin/payment-settings.js"></script>
+</body>
+
+</html>
