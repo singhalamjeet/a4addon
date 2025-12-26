@@ -46,6 +46,11 @@ app.get('/admin/payment-settings', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin', 'payment-settings.html'));
 });
 
+// Customer dashboard
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard', 'index.html'));
+});
+
 // Root route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));

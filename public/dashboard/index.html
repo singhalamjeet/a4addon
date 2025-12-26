@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Widgets - A4 Addon</title>
+    <link rel="stylesheet" href="/dashboard/style.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>📸 A4 Addon</h2>
+                <p id="userEmail" class="user-email"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item active">
+                    <span class="icon">🎨</span>
+                    <span>My Widgets</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="icon">📊</span>
+                    <span>Analytics</span>
+                    <span class="badge">Soon</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-secondary">
+                    <span>🚪 Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div>
+                    <h1>My Instagram Widgets</h1>
+                    <p>Create and manage your Instagram content widgets</p>
+                </div>
+                <button id="createWidgetBtn" class="btn btn-primary">
+                    <span>+ Create Widget</span>
+                </button>
+            </div>
+
+            <!-- Widgets Grid -->
+            <div id="widgetsGrid" class="widgets-grid">
+                <!-- Widgets will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">📸</div>
+                <h2>No widgets yet</h2>
+                <p>Create your first Instagram widget to get started</p>
+                <button class="btn btn-primary" onclick="document.getElementById('createWidgetBtn').click()">
+                    Create Widget
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Widget Modal -->
+    <div id="widgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create Instagram Widget</h2>
+                <button class="modal-close" onclick="closeWidgetModal()">&times;</button>
+            </div>
+
+            <form id="widgetForm">
+                <div class="form-group">
+                    <label for="widgetName">Widget Name *</label>
+                    <input type="text" id="widgetName" placeholder="e.g., Homepage Gallery" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="widgetType">Instagram Mode *</label>
+                    <select id="widgetType" required>
+                        <option value="instagram_personal">Instagram Personal (Public Posts)</option>
+                        <option value="instagram_business" disabled>Instagram Business (Coming Soon)</option>
+                    </select>
+                    <small>Personal mode: Manually add public Instagram post URLs</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="widgetLayout">Layout</label>
+                        <select id="widgetLayout">
+                            <option value="grid">Grid</option>
+                            <option value="carousel">Carousel</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="widgetTheme">Theme</label>
+                        <select id="widgetTheme">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="widgetPostCount">Maximum Posts</label>
+                    <input type="number" id="widgetPostCount" min="1" max="50" value="6">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeWidgetModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saveWidgetBtnText">Create Widget</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Widget Details Modal -->
+    <div id="widgetDetailsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="detailsWidgetName">Widget Details</h2>
+                <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+            </div>
+
+            <div class="widget-details">
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="posts">Instagram Posts</button>
+                    <button class="tab-btn" data-tab="embed">Embed Code</button>
+                    <button class="tab-btn" data-tab="settings">Settings</button>
+                </div>
+
+                <!-- Posts Tab -->
+                <div id="postsTab" class="tab-content active">
+                    <div class="add-post-section">
+                        <input type="url" id="postUrlInput"
+                            placeholder="Paste Instagram post URL (e.g., https://www.instagram.com/p/ABC123/)">
+                        <button id="addPostBtn" class="btn btn-primary">Add Post</button>
+                    </div>
+
+                    <div id="postsList" class="posts-list">
+                        <!-- Posts will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Embed Code Tab -->
+                <div id="embedTab" class="tab-content">
+                    <p>Copy this code and paste it into your website where you want the widget to appear:</p>
+                    <div class="code-block">
+                        <code id="embedCode"></code>
+                        <button class="btn-copy" onclick="copyEmbedCode()">📋 Copy</button>
+                    </div>
+
+                    <div class="embed-info">
+                        <h3>Preview URL</h3>
+                        <a id="previewUrl" href="#" target="_blank" class="preview-link"></a>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsTab" class="tab-content">
+                    <div class="settings-section">
+                        <h3>Widget Configuration</h3>
+                        <p><strong>Layout:</strong> <span id="settingsLayout"></span></p>
+                        <p><strong>Theme:</strong> <span id="settingsTheme"></span></p>
+                        <p><strong>Max Posts:</strong> <span id="settingsPostCount"></span></p>
+                        <p><strong>Status:</strong> <span id="settingsStatus"></span></p>
+
+                        <div class="danger-zone">
+                            <h3>Danger Zone</h3>
+                            <button class="btn btn-danger" onclick="deleteWidget()">Delete Widget</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/admin/app.js"></script>
+    <script src="/dashboard/app.js"></script>
+</body>
+
+</html>
