@@ -4,6 +4,9 @@ const supabase = require('./config/supabase');
 const adminRoutes = require('./routes/admin');
 const paymentSettingsRoutes = require('./routes/payment-settings');
 const checkoutRoutes = require('./routes/checkout');
+const socialAuthRoutes = require('./routes/social-auth');
+const widgetsRoutes = require('./routes/widgets');
+const widgetFeedRoutes = require('./routes/widget-feed');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +23,15 @@ app.use('/api/admin/payment-settings', paymentSettingsRoutes);
 
 // Mount checkout routes
 app.use('/api/checkout', checkoutRoutes);
+
+// Mount social auth routes (Instagram/Facebook)
+app.use('/api/social', socialAuthRoutes);
+
+// Mount widget management routes
+app.use('/api/widgets', widgetsRoutes);
+
+// Mount public widget feed route
+app.use('/api/widget', widgetFeedRoutes);
 
 // Admin routes
 app.get('/admin', (req, res) => {
