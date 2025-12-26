@@ -6,8 +6,13 @@ let widgets = [];
 (async () => {
     const session = await getSession();
     if (!session) {
-        window.location.href = '/admin'; // Reuse admin login for now
+        window.location.href = '/login'; // Changed from /admin to /login
         return;
+    }
+
+    // Store token for API calls
+    if (session.access_token) {
+        localStorage.setItem('supabase_token', session.access_token);
     }
 
     // Display user email
@@ -21,7 +26,13 @@ let widgets = [];
 })();
 
 // Logout
-document.getElementById('logoutBtn')?.addEventListener('click', logout);
+document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+    }
+    localStorage.removeItem('supabase_token');
+    window.location.href = '/login';
+});
 
 // Load user's widgets
 async function loadWidgets() {
